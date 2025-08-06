@@ -334,7 +334,6 @@ npm run
 npm start
 ```
 
-
 ![NPM START](images/image3.png)
 
 Access the app at [http://localhost:3000](http://localhost:3000)
@@ -409,6 +408,7 @@ docker run -p 8080:80 task-manager-app
 Visit [http://localhost:8085](http://localhost:8085) to view the live app.
 
 ![Running Container](images/image6.png)
+
 ---
 
 ## 🧠 What You’ll Learn in This Series
@@ -427,16 +427,10 @@ As we progress through the series, this project will serve as the base for explo
 
 ## 📅 Progress Tracker: Everyday DevOps
 
-| Day | Topic |
-|-----|-------|
-| 20  | 🟢 React App Setup + Dockerized |
-| 21+ | 🔜 GitOps, Monitoring, Security, CI/CD, etc. |
-
----
-
-## 📷 Screenshots
-
-> *Optional: Include screenshots of the UI and Docker build process here.*
+| Day | Topic                                         |
+|-----|-----------------------------------------------|
+| 21  | 🟢 React App Setup + Dockerized              |
+| 22+ | 🔜 GitOps, Monitoring, Security, CI/CD, etc. |
 
 ---
 
@@ -455,10 +449,10 @@ MIT
 ## 🙋‍♀️ Author
 
 **Rashida Mohammed** — Everyday DevOps Challenge | GitOps Series  
-[LinkedIn](https://www.linkedin.com/in/rashidamohammed/) • [GitHub](https://github.com/<your-username>)
+[LinkedIn](https://www.linkedin.com/in/rashida-mohammed-cloud) • [GitHub](https://github.com/Rashkerry-newversion)
 
 ---
 
 ## 🌐 Join the Journey
 
-Follow the [Everyday DevOps Challenge](https://www.linkedin.com/feed/hashtag/everydaydevops) on LinkedIn for daily updates, lessons learned, and behind-the-scenes progress.
+Follow the [Everyday DevOps Challenge](https://www.linkedin.com/in/rashida-mohammed-cloud) on LinkedIn for daily updates, lessons learned, and behind-the-scenes progress
