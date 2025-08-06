@@ -1,0 +1,28 @@
+# .dockerignore
+# Ignore node_modules directory
+node_modules/
+
+# Ignore local build output (if any, though Dockerfile handles this from builder stage)
+build/
+
+# Ignore Git related files
+.git/
+
+# Ignore project-specific images not needed in the final app bundle
+images/
+
+# Ignore IDE/editor specific files
+.vscode/
+
+# Ignore environment variable files
+.env
+.env.*
+
+# Ignore npm debug logs and other temporary files
+npm-debug.log*
+*.log
+*.tmp
+
+# Ignore the .dockerignore file itself
+.dockerignore
+
