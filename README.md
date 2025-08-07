@@ -196,9 +196,7 @@ This is the core logic and UI for the task manager.
 
 - The entry point of the app. Ensure it looks like this.
 
-```bash
-src/index.js
-```
+`src/index.js`
 
 ```javascript
 import React from 'react';
@@ -235,9 +233,7 @@ src/index.css
 @tailwind utilities;
 ```
 
-```bash
-tailwind.config.js
-```
+`tailwind.config.js`
 
 - This file configures Tailwind CSS to scan your source files for classes.
 
