@@ -428,6 +428,134 @@ As we progress through the series, this project will serve as the base for explo
 
 ---
 
+## Day 22 – Everyday DevOps Challenge 🚀
+
+## PART-2: CI/CD with GitHub Actions for React Task Manager App
+
+This guide will walk you through setting up a CI/CD pipeline using GitHub Actions to automatically build, containerize, and optionally push your React app to Docker Hub. It's beginner-friendly, no prior experience needed!
+
+---
+
+## 🛠 Prerequisites
+
+✅ A GitHub repo with your React Task Manager app  
+✅ Dockerfile already working locally  
+✅ Docker Hub account
+
+---
+
+## 📁 PART 2 - Project Structure
+
+```bash
+react-task-manager/
+├── public/
+├── src/
+├── Dockerfile
+├── nginx.conf
+├── package.json
+├── .github/
+│   └── workflows/
+│       └── docker-build.yml
+└── README.md
+```
+
+---
+
+## 1️⃣ Step 1: Create GitHub Actions Workflow
+
+📄 Path: `.github/workflows/docker-build.yml`
+
+![Workflow Structure](images/image7.png)
+
+```yaml
+name: Build and Dockerize React App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build the React app
+      run: npm run build
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/task-manager-app:latest
+```
+
+---
+
+## 2️⃣ Step 2: Add GitHub Secrets
+
+Go to your GitHub repo → Settings → Secrets and variables → Actions → **New repository secret**
+
+Add:
+
+- `DOCKER_USERNAME` → your Docker Hub username
+- `DOCKER_PASSWORD` → your Docker Hub password or token(more secure)
+
+![GitHub Secrets](images/image8.png)
+
+---
+
+## 3️⃣ Step 3: Test Your Workflow
+
+✅ Git add, commit and push to the `main` branch  
+✅ Watch the Actions tab for your build to run
+
+![Actions](images/image9.png)
+
+✅ Make a small change to your `README.md` or any file if there is a build fail
+
+![Build Fail](images/image11.png)
+
+If successful, your Docker image will be available on Docker Hub!
+
+![DockerHub Image](images/image10.png)
+
+---
+
+## 💡 Troubleshooting Tips
+
+- Make sure `Dockerfile` is at the root of your repo
+- Ensure your app builds successfully locally (`npm run build`)
+- If your image isn't showing up, double-check your Docker tag or secrets
+- Also make sure the naming of the secret matches the one in the local file.
+
+---
+
+## 🚀 Next Steps
+
+In the next stage, we’ll prepare Kubernetes deployment configs so this containerized app can run in a real cluster!
+
 ## 👥 Contributing
 
 This is a solo DevOps learning project for now, but contributions or ideas are welcome as I grow the scope of the challenge.
