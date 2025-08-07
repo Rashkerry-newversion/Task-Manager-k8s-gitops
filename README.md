@@ -367,7 +367,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-- Create nginx.conf in the project root:
+- Create `nginx.conf` in the project root:
 
 ```nginx
 server {
