@@ -221,9 +221,7 @@ root.render(
 /* Any custom CSS for your App component can go here */
 ```
 
-```bash
-src/index.css
-```
+`src/index.css`
 
 - This file imports Tailwind CSS to be used in the app.
 
