@@ -556,6 +556,142 @@ If successful, your Docker image will be available on Docker Hub!
 
 In the next stage, we’ll prepare Kubernetes deployment configs so this containerized app can run in a real cluster!
 
+---
+
+## Day 23 - Deploy React App on Minikube (Kubernetes Made Simple)
+
+Welcome to Day 23 of the Everyday DevOps Challenge! Today we’re going to deploy our Dockerized React Task Manager app to a **Kubernetes cluster running on Minikube**.
+
+This guide is so simple even a curious 5-year-old could follow it 🚀
+
+---
+
+### 🧰 Prerequisites
+
+Make sure these are installed and running:
+
+- ✅ [Docker](https://docs.docker.com/get-docker/)
+- ✅ [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+- ✅ [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- ✅ A Docker image already pushed to Docker Hub  
+  Example: `your-dockerhub-username/task-manager-app:latest`
+
+---
+
+### 🚀 Step-by-Step Guide
+
+#### 1. Start Minikube
+
+- Run below command to start
+
+```bash
+minikube start
+minikube -p minikube docker-env --shell powershell | Invoke-Expression  #Point Docker to Minikube
+```
+
+> ☕ This may take a minute. Minikube spins up a tiny Kubernetes cluster on your machine.
+
+![Minikube Start](images/image12.png)
+
+---
+
+#### 2. Build Your Docker Image (Optional if already built)
+
+```bash
+docker build -t task-manager-app .
+docker images
+```
+
+> ☕ This builds your React app into a Docker image named `task-manager-app`.
+![Docker Build](images/image17.png)
+![Docker Image](images/image13.png)
+
+---
+
+#### 3. Create Kubernetes Deployment
+
+- Create a file called `deployment.yaml`:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:clear
+    
+      app: task-manager
+  template:
+    metadata:
+      labels:
+        app: task-manager
+    spec:
+      containers:
+      - name: task-manager
+        image: task-manager-app
+        ports:
+        - containerPort: 80
+```
+
+![Deployment.yml](images/image14.png)
+
+- Create a `service.yaml` file
+
+```bash
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-manager
+spec:
+  selector:
+    app: task-manager
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
+```
+
+- Apply it:
+
+```bash
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+
+![Kubectl Apply](images/image16.png)
+![Kubectl Apply](images/image18.png)
+
+---
+
+#### 4. Verify Deployment
+
+- Check to see if deployments were applied
+
+```bash
+kubectl get deployments
+kubectl get pods
+```
+
+![Verify Apply](images/image19.png)
+![Verify Apply](images/image20.png)
+
+---
+
+#### 5. Access the App
+
+```bash
+minikube service task-manager
+```
+
+![Expose Service](images/image21.png)
+
+This opens your browser with the app running on Kubernetes 🎉
+
+![App Running](images/image22.png)
+
 ## 👥 Contributing
 
 This is a solo DevOps learning project for now, but contributions or ideas are welcome as I grow the scope of the challenge.
