@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: task-manager
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: task-manager
@@ -15,6 +15,7 @@ spec:
       containers:
       - name: task-manager
         image: rashkerry/task-manager-app:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:

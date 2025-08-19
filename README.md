@@ -692,6 +692,350 @@ This opens your browser with the app running on Kubernetes 🎉
 
 ![App Running](images/image22.png)
 
+---
+
+## Day 24 -🌍 Day 24 – Choosing a Cloud for GitOps ☁️🤯➡️🚀
+
+Today’s challenge wasn’t writing YAML or deploying code, it was picking where to deploy it.
+
+Big clouds like AWS, Azure, and GCP? Powerful but complex.
+
+Smaller clouds like Civo, DigitalOcean, and Linode? Simpler, faster, and often easier on the wallet.
+
+In the end, I realized it’s not about choosing the biggest cloud, it’s about choosing the right one for where you are in your journey.
+
+If you’ve ever stared at multiple cloud provider tabs, wondering where to start, you’re not alone.
+
+I broke down the pros, cons, and costs so you can skip the overwhelm and get to deploying faster.
+
+Read the full article to join me on this part of my DevOps journey!
+🔗 [https://lnkd.in/gAVANKdT](https://lnkd.in/gAVANKdT)
+
+---
+
+## Day 25 – Chasing “Free” Clouds: 4 Rejections, 0 Clusters… Still Smiling 😄
+
+- Today’s hashtag#EverydayDevOps lesson wasn’t about YAML or pods, it was about cloud gatekeeping.
+
+- I thought smaller “developer-friendly” clouds would be my ticket after ruling out the big three… but here’s how it went:
+     1. Civo – Phone verification failed
+     2. DigitalOcean – Address mismatch
+     3. Linode – Flagged before launch (and $108/month for K8s)
+     4. Oracle Cloud – Signup stalled
+
+- I get it, verification protects against abuse, but for learners, it can feel like the hardest part of cloud computing is just getting in.
+
+- The real cost of a cloud platform isn’t just money, it’s also the time, effort, and patience needed to get started.
+
+- Well… I’m still smiling, so I ain’t giving up. 😄
+
+Checkout post on [LinkedIn](https://www.linkedin.com/posts/rashida-mohammed-cloud_everydaydevops-kubernetes-devopsjourney-activity-7361357016017080321-w6Qd?utm_source=share&utm_medium=member_desktop&rcm=ACoAACwCcgABdkoA_oqBSidBRH7hgDtLW0chd50)
+
+---
+
+## 💫 Day 26 of hashtag#EverydayDevOps — The Prodigal Daughter Returns 💫
+
+- After wandering through the “promised lands” of smaller cloud providers 🌴✨, chasing free credits and budget-friendly setups 💸, I’ve finally come back home… to the Big Three; AWS, Azure, and GCP.
+
+Why?
+ Well, let’s just say the journey was… educational 😂:
+ 💳 Billing roadblocks that made me question my life choices
+ 📍 Region limitations that cut my plans short
+ 🔌 Missing features that had me duct-taping solutions together
+
+- Now, I’m ready to settle down 🏡, spin up my Kubernetes playground, and finally run Flux + ArgoCD together, all wrapped in a Terraform setup so I can build 🛠️ and destroy 💥 my pipeline with ease.
+
+Sometimes, you have to roam far to appreciate what you had all along 😉.
+
+📍 Full write-up: [https://lnkd.in/eA5fRJw8](https://lnkd.in/eA5fRJw8)
+
+---
+
+## Day 27 of hashtag#EverydayDevOps – Back to the AWS Cloud Castle 👑
+
+- After wrestling with the limits of “free” cloud tiers, I’ve made peace with the fact that a reliable, managed Kubernetes setup isn’t truly free.
+
+- So, I’m diving into AWS EKS and yes, it’s a paid playground, but one that unlocks powerful GitOps workflows with Flux and Argo CD.
+
+- I’ll be sharing how I plan to keep things lean, spin environments up and down when needed, and turn past frustrations into real-world learning.
+
+📖 Read my latest article: [https://lnkd.in/eCiXiiE8](https://lnkd.in/eCiXiiE8)
+
+---
+
+## Day 28/29 – Click ▶️, Ship 🚀: Deploy to AWS EKS (Super Simple Guide)
+
+> Goal: Get your **Task Manager** app live on **AWS EKS** using Terraform + kubectl.  
+> We keep it friendly, fast, and easy. Pinky promise. 🤝
+
+---
+
+### 🧰 What you need (once)
+
+- An **AWS account** (billing enabled)
+- **Terminal** (macOS/Linux or Windows WSL/PowerShell)
+- **Installed**: [Terraform], [AWS CLI], [kubectl]
+- Your Docker image pushed (e.g. `DOCKERHUB_USERNAME/task-manager-app:latest`)
+
+💡 *Money tip:* EKS is not free. Create → test → **destroy** when done.
+
+---
+
+## 🗂️ Your project folders (quick check)
+
+```bash
+Task-Manager-Project/
+├── k8s/
+│   ├── deployment.yaml
+│   └── service.yaml
+├── scripts/
+│   ├── deploy.sh
+│   └── destroy.sh
+└── terraform/
+    ├── main.tf
+    ├── variables.tf
+    ├── outputs.tf
+    ├── versions.tf
+    └── terraform.tfvars.example
+```
+
+If you don’t see these, create them or copy from Day 26.
+
+![Folder Structure - Day 28](images/image24.png)
+
+---
+
+## Step 0 - Put your Docker image name in the app
+
+Open `k8s/deployment.yaml` and replace the image placeholder:
+
+```yaml
+# k8s/deployment.yaml
+containers:
+  - name: task-manager
+    image: DOCKERHUB_USERNAME/task-manager-app:latest   # <-- change this
+```
+
+![Step 0 – deployment.yaml image updated](images/image25.png)
+
+- Also be aware that the `service.yaml` file would be different from the previous one. So replace it with below:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-manager
+  labels:
+    app: task-manager
+spec:
+  type: LoadBalancer
+  selector:
+    app: task-manager
+  ports:
+    - port: 80
+      targetPort: 80
+```
+
+---
+
+## Step 1 - Log in to AWS (one-time)
+
+- You first need to create an IAM user on the AWS console with below attached policies:
+
+```bash
+AmazonEKSClusterPolicy
+AmazonEKSWorkerNodePolicy
+AmazonEKS_CNI_Policy
+AmazonEC2FullAccess
+IAMFullAccess #(optional, for flexibility while testing)
+AWSKeyManagementServicePowerUser
+```
+
+- Or create an inline policy with below script:
+
+```bash
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "eks:*",
+        "iam:CreateRole",
+        "iam:AttachRolePolicy",
+        "iam:PassRole",
+        "iam:CreateServiceLinkedRole",
+        "ec2:Describe*",
+        "ec2:CreateSecurityGroup",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:AuthorizeSecurityGroupEgress",
+        "ec2:RevokeSecurityGroupEgress",
+        "ec2:DeleteSecurityGroup",
+        "kms:DescribeKey",
+        "kms:CreateGrant",
+        "kms:ListGrants",
+        "kms:RevokeGrant"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+- Create an access key for the user and and use it to configure the CLI using below commands
+
+```bash
+aws configure
+# Paste: AWS Access Key ID, Secret Access Key, region (e.g. us-east-1), output (json)
+aws sts get-caller-identity
+```
+
+- You should see your AWS account info.
+
+![Step 1 – AWS CLI configured](images/image26.png)
+
+---
+
+## Step 2 - Copy the example variables (easy button)
+
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+```
+
+- If you want, open `terraform.tfvars` and change region/cluster name.
+
+![Step 2 – terraform.tfvars ready](images/image27.png)
+
+---
+
+## Step 3 - Create the cluster (the magic part ✨)
+
+```bash
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+This builds the VPC + EKS + nodes. Take a stretch break. 🧘‍♀️
+
+- VPC Components
+
+![Step 3 – terraform apply success](images/image28.png)
+
+- EKS Components
+
+![Step 3 – terraform apply success](images/image29.png)
+
+## Step 4 - Point kubectl to your cluster
+
+Update kubeconfig using the **eks-admin** profile:
+
+```bash
+aws eks update-kubeconfig --name everyday-devops-eks --region us-east-1 --profile everydaydevops
+```
+
+Check context:
+
+```bash
+kubectl config get-contexts
+kubectl config current-context
+```
+
+![kubectl contexts](images/image30.png)
+
+---
+
+## Step 5 - Grant the IAM user Kubernetes admin
+
+- Kubernetes RBAC is separate from IAM. You must map the IAM user into `system:masters` via the `aws-auth` ConfigMap.
+
+### Add Cluster-Wide Admin Policy (Console)
+
+- Go to the Amazon EKS Console → Clusters → everyday-devops-eks
+
+- In the Access tab, check for any existing Access entries.
+
+- Click Manage access entries.
+
+- Select the IAM principal `Everydaydevops`.
+
+![Access Entries](images/image31.png)
+
+- Under Access policies, choose:
+
+✅ AmazonEKSClusterAdminPolicy
+
+![Access Entries](images/image33.png)
+
+- Scope: Cluster (not Namespace).
+
+- Save changes.
+
+## Step 6 - Test access
+
+```bash
+kubectl get nodes
+kubectl get ns
+```
+
+- You should see your worker nodes and default namespaces.
+
+![screenshot](images/image34.png)
+
+---
+
+## Step 7 - Deploy the app to Kubernetes
+
+- From the **project root** run:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl get pods
+kubectl get svc task-manager -o wide
+```
+
+- Wait 1–3 minutes for the Service to get an **EXTERNAL-IP/hostname**.  
+
+- Open it in the browser: `http://<EXTERNAL-IP>`
+
+![Step 5a – pods running](images/image37.png)  
+![Step 5c – app in browser](images/image38.png)
+
+---
+
+## Step 8 - Save money: Destroy when done 💸
+
+```bash
+# Optional: remove app first
+kubectl delete -f k8s/
+
+# Then destroy infra
+cd terraform
+terraform destroy -auto-approve
+```
+
+![Step 8 – terraform destroy](images/image39.png)
+
+---
+
+## ✅ You did it
+
+- You built a real Kubernetes cluster on AWS.
+- You deployed your app with 2 files (`deployment.yaml`, `service.yaml`).
+- You learned to **create, verify, expose, and destroy**. Boom. 💥
+
+---
+
+### Appendix (optional)
+
+- Want GitOps next? Add Flux or Argo CD with Helm later.
+
+- Want HTTPS + custom domain? Use AWS ALB Ingress + ACM (future step).
+
+---
+
 ## 👥 Contributing
 
 This is a solo DevOps learning project for now, but contributions or ideas are welcome as I grow the scope of the challenge.

@@ -1,0 +1,9 @@
+region           = "us-east-1"
+cluster_name     = "everyday-devops-eks"
+cluster_version  = "1.29"
+node_instance_types = ["t3.small"]
+desired_size     = 2
+min_size         = 1
+max_size         = 2
+install_flux     = false
+install_argocd   = false
