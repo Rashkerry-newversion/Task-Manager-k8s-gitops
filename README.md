@@ -1016,8 +1016,6 @@ cd terraform
 terraform destroy -auto-approve
 ```
 
-![Step 8 – terraform destroy](images/image39.png)
-
 ---
 
 ## ✅ You did it
