@@ -1040,7 +1040,7 @@ terraform destroy -auto-approve
 
 ---
 
-## Flux CD Prerequisites
+### Flux CD Prerequisites
 
 - Running **EKS cluster**  
 - **AWS CLI** configured (`aws configure`)  
@@ -1050,7 +1050,7 @@ terraform destroy -auto-approve
 
 ---
 
-## Step 0: Install Flux CLI
+### Step 0: Install Flux CLI
 
 - First run your powershell as an Administrator
 
@@ -1066,7 +1066,7 @@ flux --version
 
 ---
 
-## Step 1: Configure kubectl for EKS
+### Step 1: Configure kubectl for EKS
 
 ```bash
 aws eks --region <region> update-kubeconfig --name <cluster-name>
@@ -1077,7 +1077,7 @@ kubectl get nodes
 
 ---
 
-## Step 2: Create Flux Namespace
+### Step 2: Create Flux Namespace
 
 - Create a new namespace for flux by running:
 
@@ -1087,7 +1087,7 @@ kubectl create namespace flux-system
 
 ---
 
-## Step 3: Bootstrap Flux from Git
+### Step 3: Bootstrap Flux from Git
 
 - Run below command to boostrap flux
 
@@ -1128,9 +1128,9 @@ flux get kustomizations
 
 ## Step 5: Test GitOps Workflow
 
-1. Edit `deployment.yaml` (e.g., increase replicas from 2 → 3). 
- 
-2. Commit and push changes:
+- Edit `deployment.yaml` (e.g., increase replicas from 2 → 3).
+
+- Commit and push changes:
 
 ```bash
 git add .
@@ -1138,14 +1138,41 @@ git commit -m "Increase replicas"
 git push origin main
 ```
 
-3. Check that Flux syncs the changes:
+- Check that Flux syncs the changes:
 
 ```bash
 flux get kustomizations
-kubectl get pods
+kubectl get pods -n task-manager
 ```
 
+![Flux kustomization](images/image44.png)
+![Flux pods](images/image45.png)
+
 ---
+
+### ✅ Outcome
+
+- React Task Manager app is fully GitOps-managed on EKS.  
+- Any changes pushed to Git are automatically applied to the cluster.  
+- Cluster state is version-controlled and auditable.
+
+---
+
+### Remove App Deployments
+
+- If you just want to destroy your app (but leave Flux running), delete the Kustomization pointing to your manifests:
+
+```bash
+kubectl delete kustomization flux-system
+```
+
+- If you deployed manually via YAML:
+
+```bash
+kubectl delete -f ./k8s/
+```
+
+(where ./k8s/ is your manifests folder for Deployment, Service, Namespace, etc.).
 
 ## 👥 Contributing
 
