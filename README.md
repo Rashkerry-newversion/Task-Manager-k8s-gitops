@@ -1087,6 +1087,64 @@ kubectl create namespace flux-system
 
 ---
 
+## Step 3: Bootstrap Flux from Git
+
+- Run below command to boostrap flux
+
+```bash
+flux bootstrap github `
+  --owner=<your-github-username> `
+  --repository=react-task-manager-gitops `
+  --branch=main `
+  --path=./k8s `
+  --personal
+```
+
+**Notes:**  
+
+- Use backticks `` ` `` for line continuation in powershell
+- Flux will create SSH keys for GitHub if the repo is private.  
+
+![Flux bootstrap](images/image40.png)
+
+- If you encounter issues, ensure your GitHub repo isn't empty or has no conflicting files.
+
+---
+
+## Step 4: Verify Flux Installation
+
+```bash
+kubectl get pods -n flux-system
+flux get kustomizations
+```
+
+- Check that Flux pods are running.  
+- Ensure your `task-manager` deployment is synced.
+
+![Flux verification](images/image41.png)
+![Flux kustomizations](images/image42.png)
+
+---
+
+## Step 5: Test GitOps Workflow
+
+1. Edit `deployment.yaml` (e.g., increase replicas from 2 → 3).  
+2. Commit and push changes:
+
+```bash
+git add .
+git commit -m "Increase replicas"
+git push origin main
+```
+
+3. Check that Flux syncs the changes:
+```powershell
+flux get kustomizations
+kubectl get pods
+```
+
+---
+
 ## 👥 Contributing
 
 This is a solo DevOps learning project for now, but contributions or ideas are welcome as I grow the scope of the challenge.
