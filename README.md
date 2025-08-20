@@ -1032,6 +1032,59 @@ terraform destroy -auto-approve
 
 - Want HTTPS + custom domain? Use AWS ALB Ingress + ACM (future step).
 
+## Day 30: GitOps with Flux CD on EKS (PowerShell)
+
+### Objective
+
+- Implement GitOps using Flux CD to manage the React Task Manager app on EKS. Changes to Git automatically update the Kubernetes cluster.
+
+---
+
+## Flux CD Prerequisites
+
+- Running **EKS cluster**  
+- **AWS CLI** configured (`aws configure`)  
+- **kubectl** installed  
+- **Flux CLI** installed (see Step 0 below)  
+- Git repository with your Kubernetes manifests (`deployment.yaml` & `service.yaml`)
+
+---
+
+## Step 0: Install Flux CLI
+
+- First run your powershell as an Administrator
+
+```bash
+# Download and install Flux CLI 
+choco install flux 
+
+# Verify installation
+flux --version
+```
+
+![Flux CLI Version](images/image39.png)
+
+---
+
+## Step 1: Configure kubectl for EKS
+
+```bash
+aws eks --region <region> update-kubeconfig --name <cluster-name>
+kubectl get nodes
+```
+
+- Ignore this if already done in previous configuration
+
+---
+
+## Step 2: Create Flux Namespace
+
+- Create a new namespace for flux by running:
+
+```bash
+kubectl create namespace flux-system
+```
+
 ---
 
 ## 👥 Contributing
