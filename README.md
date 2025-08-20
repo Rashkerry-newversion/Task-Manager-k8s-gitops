@@ -1128,7 +1128,8 @@ flux get kustomizations
 
 ## Step 5: Test GitOps Workflow
 
-1. Edit `deployment.yaml` (e.g., increase replicas from 2 → 3).  
+1. Edit `deployment.yaml` (e.g., increase replicas from 2 → 3). 
+ 
 2. Commit and push changes:
 
 ```bash
@@ -1138,7 +1139,8 @@ git push origin main
 ```
 
 3. Check that Flux syncs the changes:
-```powershell
+
+```bash
 flux get kustomizations
 kubectl get pods
 ```
