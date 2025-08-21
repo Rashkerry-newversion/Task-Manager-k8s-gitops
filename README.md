@@ -1185,8 +1185,11 @@ kubectl delete -f ./k8s/
 ## 🧰 What you need first (quick checklist)
 
 - ✅ An **AWS account** and an **IAM user** with EKS cluster‑admin access (e.g., `AmazonEKSClusterAdminPolicy` at **Cluster** scope).
+
 - ✅ An existing **EKS cluster** (we’ll call it `everyday-devops-eks`) in **us-east-1**.
+
 - ✅ **kubectl** and **AWS CLI** installed and working.
+
 - ✅ You can run this and see nodes (it proves access is good):
 
 ```bash
@@ -1266,6 +1269,7 @@ $pwd64 = kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{
 9. Click **Create** → then **Sync**.
 ![Argo Details](images/image49.png)
 10. Wait for the app to sync and become healthy.
+![Argo Sync](images/image50.png)
 
 ### B) YAML way (copy/paste then apply)
 
@@ -1277,6 +1281,9 @@ kubectl apply -n argocd -f apps/argo-app-task-manager.yaml
 
 Argo CD will pull from Git and create everything automatically.
 
+![Argo YAML](images/image51.png)
+![EKS Replicasets](images/image52.png)
+
 ---
 
 ## ✅ Step 5: Confirm it’s running
@@ -1286,8 +1293,47 @@ kubectl get pods -n task-manager
 kubectl get svc  -n task-manager
 ```
 
+![Pods Running confirmation](images/image53.png)
+
 - If the **Service** type is `LoadBalancer`, grab the **EXTERNAL-IP** and open it in your browser.
+
 - If it says `pending`, give it a minute (the cloud is thinking).
+
+![Service LoadBalancer](images/image54.png)
+
+---
+
+## 🧹 Step 6: Clean up (stop charges 💸)
+
+**Delete the Argo CD app:**
+
+```bash
+# If you created via UI, delete it from the UI
+# If you applied the YAML:
+kubectl delete -n argocd -f apps/argo-app-task-manager.yaml
+```
+
+![Argo Destroy](images/image55.png)
+
+**Remove Argo CD (if you’re done):**
+
+```bash
+kubectl delete ns argocd
+```
+
+**Keep the cluster or destroy it with Terraform** when you’re ready.
+
+---
+
+## 🆘 Troubleshooting (friendly fixes)
+
+- **“forbidden” errors with kubectl** → Your IAM user needs **AmazonEKSClusterAdminPolicy** (Cluster scope) in EKS **Access entries**.
+- **Argo CD UI won’t open** → Make sure the `port-forward` is running, or use the LoadBalancer option.
+- **No EXTERNAL-IP** → Your cluster/subnets must allow public LoadBalancers; otherwise use port-forward.
+- **App Not Showing In Browser** → Make sure the browser is pointing to `http` not `https`
+- **Pods stuck in `ImagePullBackOff`** → The image name is wrong or the registry needs auth. Fix the image in `deployment.yaml` and push to Git; Argo will sync the change.
+- **Argo CD app not syncing** → Check the Argo CD logs for errors: `kubectl logs -n argocd deploy/argocd-server`.
+- **Argo CD stuck in `OutOfSync`** → Make sure your Git repo has the correct manifests and Argo is configured to watch that path.
 
 ---
 
@@ -1313,3 +1359,5 @@ MIT
 ## 🌐 Join the Journey
 
 Follow the [Everyday DevOps Challenge](https://www.linkedin.com/in/rashida-mohammed-cloud) on LinkedIn for daily updates, lessons learned, and behind-the-scenes progress
+
+Happy GitOps-ing 🎉.
