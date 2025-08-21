@@ -1174,6 +1174,123 @@ kubectl delete -f ./k8s/
 
 (where ./k8s/ is your manifests folder for Deployment, Service, Namespace, etc.).
 
+---
+
+## Day 31 — Argo CD on EKS (Super Simple Guide)
+  
+> We’ll install **Argo CD** on your **EKS** cluster and deploy your **Task Manager** app the GitOps way.
+
+---
+
+## 🧰 What you need first (quick checklist)
+
+- ✅ An **AWS account** and an **IAM user** with EKS cluster‑admin access (e.g., `AmazonEKSClusterAdminPolicy` at **Cluster** scope).
+- ✅ An existing **EKS cluster** (we’ll call it `everyday-devops-eks`) in **us-east-1**.
+- ✅ **kubectl** and **AWS CLI** installed and working.
+- ✅ You can run this and see nodes (it proves access is good):
+
+```bash
+aws eks update-kubeconfig --region us-east-1 --name everyday-devops-eks
+kubectl get nodes
+```
+
+> If the nodes command says “forbidden,” fix your **Access entries** in the EKS console first (give your IAM user the **AmazonEKSClusterAdminPolicy** with **Cluster** scope).
+
+---
+
+### 🚀 Step 1: Install Argo CD
+
+- First create a namespace then install ArgoCD with below commands:
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# (optional) watch Argo CD pods start
+kubectl get pods -n argocd -w
+```
+
+---
+
+## 🔑 Step 2: Get the Argo CD admin password & open the UI
+
+### Easiest way to open the UI (port-forward)
+
+- Port forward Argo to port 8080:443
+
+```bash
+# keep this running in a terminal tab
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+Now open: [https://localhost:8080](https://localhost:8080) (it’s HTTPS – accept the warning).  
+
+![Port Forwarding](images/image46.png)
+
+**Username:** `admin`  
+
+- Open another terminal and run below command since we do not want to close connection with the UI.
+
+**Password (mac/Linux):** # Use below command in the terminal if using these OS and the next if using powershell.
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+```
+
+**Password (Windows PowerShell):**
+
+```powershell
+$pwd64 = kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
+[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($pwd64))
+```
+
+> You can change the admin password from the Argo CD UI after you log in.
+
+![Argo CD Login](images/image47.png)
+
+---
+
+### 🤖 Step 4: Tell Argo CD to deploy your repo (2 easy ways)
+
+#### A) Clicky-click UI way (super simple)
+
+1. Open Argo CD UI → **NEW APP**.
+2. **Application Name:** `task-manager`
+3. **Project:** `default`
+4. **Repository URL:** your Git repo URL (https/ssh).
+5. **Revision:** `main` (or your branch)
+![Argo Details](images/image48.png)
+6. **Path:** `k8s/`
+7. **Destination → Cluster URL:** `https://kubernetes.default.svc`
+8. **Destination → Namespace:** `task-manager`
+9. Click **Create** → then **Sync**.
+![Argo Details](images/image49.png)
+10. Wait for the app to sync and become healthy.
+
+### B) YAML way (copy/paste then apply)
+
+- Edit `apps/argo-app-task-manager.yaml` (replace `YOUR_GIT_REPO_URL_HERE`) and apply:
+
+```bash
+kubectl apply -n argocd -f apps/argo-app-task-manager.yaml
+```
+
+Argo CD will pull from Git and create everything automatically.
+
+---
+
+## ✅ Step 5: Confirm it’s running
+
+```bash
+kubectl get pods -n task-manager
+kubectl get svc  -n task-manager
+```
+
+- If the **Service** type is `LoadBalancer`, grab the **EXTERNAL-IP** and open it in your browser.
+- If it says `pending`, give it a minute (the cloud is thinking).
+
+---
+
 ## 👥 Contributing
 
 This is a solo DevOps learning project for now, but contributions or ideas are welcome as I grow the scope of the challenge.
